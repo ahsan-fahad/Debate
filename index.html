@@ -3,425 +3,255 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DebateIntel v3 — Fahad Ahsan</title>
+<title>DebateIntel v5 — Fahad Ahsan</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
   :root[data-theme="dark"] {
-    --bg:         #0b0d10;
-    --surface:    #13161c;
-    --surface2:   #1c2028;
-    --border:     #252a35;
-    --text:       #dde3ed;
-    --muted:      #66728a;
-    --accent:     #e8455a;
-    --accent-dim: rgba(232,69,90,0.18);
-    --green:      #1fd9a0;
-    --green-dim:  rgba(31,217,160,0.12);
-    --amber:      #f4a623;
-    --blue:       #5b9cf6;
-    --shadow:     0 8px 32px rgba(0,0,0,0.55);
-    --track-bg:   #1c2028;
-    --thumb-bg:   #e8455a;
+    --bg:#0b0d10;--surface:#13161c;--surface2:#1c2028;--border:#252a35;
+    --text:#dde3ed;--muted:#66728a;--accent:#e8455a;--accent-dim:rgba(232,69,90,0.16);
+    --green:#1fd9a0;--green-dim:rgba(31,217,160,0.12);--amber:#f4a623;--blue:#5b9cf6;
+    --shadow:0 8px 32px rgba(0,0,0,0.55);
   }
   :root[data-theme="light"] {
-    --bg:         #eef1f6;
-    --surface:    #ffffff;
-    --surface2:   #e2e7f0;
-    --border:     #cdd4e0;
-    --text:       #0f1623;
-    --muted:      #5a6478;
-    --accent:     #c8293e;
-    --accent-dim: rgba(200,41,62,0.1);
-    --green:      #0d9e72;
-    --green-dim:  rgba(13,158,114,0.1);
-    --amber:      #c47d0a;
-    --blue:       #2563eb;
-    --shadow:     0 4px 20px rgba(0,0,0,0.1);
-    --track-bg:   #e2e7f0;
-    --thumb-bg:   #c8293e;
+    --bg:#eef1f6;--surface:#fff;--surface2:#e2e7f0;--border:#cdd4e0;
+    --text:#0f1623;--muted:#5a6478;--accent:#c8293e;--accent-dim:rgba(200,41,62,0.1);
+    --green:#0d9e72;--green-dim:rgba(13,158,114,0.1);--amber:#c47d0a;--blue:#2563eb;
+    --shadow:0 4px 20px rgba(0,0,0,0.1);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);
+    min-height:100vh;max-width:480px;margin:0 auto;display:flex;flex-direction:column;
+    -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;
+    -webkit-user-select:none;user-select:none;
   }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'IBM Plex Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    max-width: 480px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
+  /* SETUP */
+  #setup-screen{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:32px 24px;gap:22px;text-align:center;
+  }
+  .setup-logo{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;letter-spacing:.06em}
+  .setup-logo em{color:var(--accent);font-style:normal}
+  .setup-sub{font-size:13px;color:var(--muted);line-height:1.65;max-width:290px}
+  .setup-card{
+    width:100%;background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow);
+  }
+  .setup-card label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .key-wrap{position:relative;display:flex;align-items:center}
+  #api-key-input{
+    width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+    padding:12px 44px 12px 14px;font-family:'IBM Plex Mono',monospace;font-size:13px;
+    color:var(--text);outline:none;transition:border-color .2s;-webkit-appearance:none;
+    -webkit-user-select:text;user-select:text;
+  }
+  #api-key-input:focus{border-color:var(--accent)}
+  #api-key-input::placeholder{color:var(--muted)}
+  .eye-btn{position:absolute;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px}
+  .setup-hint{font-size:11px;color:var(--muted);line-height:1.55}
+  .setup-hint a{color:var(--blue);text-decoration:none}
+  .start-btn{
+    width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:14px;
+    font-family:'IBM Plex Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s;
+  }
+  .start-btn:active{opacity:.82}
+  .theme-toggle{
+    background:var(--surface2);border:1px solid var(--border);border-radius:20px;
+    padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'IBM Plex Sans',sans-serif;
   }
 
-  /* ── SETUP SCREEN ── */
-  #setup-screen {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 24px;
-    gap: 24px;
-    text-align: center;
+  /* APP */
+  #app-screen{display:none;flex-direction:column;flex:1;min-height:100vh}
+  #app-screen.visible{display:flex}
+
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:11px 16px;background:var(--surface);border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:100;
   }
-  .setup-logo {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
+  .hdr-left{display:flex;align-items:center;gap:8px}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s;flex-shrink:0}
+  .live-dot.on{background:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);animation:blink 1s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+  .wordmark{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;letter-spacing:.05em}
+  .wordmark span{color:var(--accent)}
+  .hdr-right{display:flex;align-items:center;gap:8px}
+  .q-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)}
+
+  /* MIC ZONE */
+  .mic-zone{
+    padding:16px 16px 12px;display:flex;flex-direction:column;align-items:center;gap:12px;
+    background:var(--surface);border-bottom:1px solid var(--border);
   }
-  .setup-logo em { color: var(--accent); font-style: normal; }
-  .setup-sub { font-size: 13px; color: var(--muted); line-height: 1.65; max-width: 280px; }
-  .setup-card {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    display: flex; flex-direction: column; gap: 14px;
-    box-shadow: var(--shadow);
+  .mode-tabs{
+    display:flex;background:var(--surface2);border:1px solid var(--border);
+    border-radius:10px;padding:3px;width:100%;
   }
-  .setup-card label {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--muted);
+  .mode-tab{
+    flex:1;text-align:center;padding:7px 4px;font-size:12px;font-weight:600;
+    border-radius:8px;cursor:pointer;color:var(--muted);transition:background .2s,color .2s;
   }
-  .key-wrap { position: relative; display: flex; align-items: center; }
-  #api-key-input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 44px 12px 14px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px; color: var(--text);
-    outline: none; transition: border-color 0.2s;
-    -webkit-appearance: none;
+  .mode-tab small{display:block;font-size:9px;font-weight:400;margin-top:1px;opacity:.8}
+  .mode-tab.active{background:var(--accent);color:#fff}
+
+  /* HOLD MIC */
+  #hold-panel{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+  .mic-ring-wrap{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center}
+  .mic-ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--border);transition:border-color .2s,box-shadow .2s}
+  .mic-ring.on{border-color:var(--accent);box-shadow:0 0 0 10px var(--accent-dim),0 0 0 20px rgba(232,69,90,.05);animation:ripple 1.3s ease-out infinite}
+  @keyframes ripple{0%{box-shadow:0 0 0 0 var(--accent-dim),0 0 0 0 rgba(232,69,90,.04)}100%{box-shadow:0 0 0 14px transparent,0 0 0 28px transparent}}
+  #hold-btn{
+    width:76px;height:76px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;z-index:1;
+    -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;touch-action:none;outline:none;
+    transition:background .15s,border-color .15s;
   }
-  #api-key-input:focus { border-color: var(--accent); }
-  #api-key-input::placeholder { color: var(--muted); }
-  .eye-btn {
-    position: absolute; right: 12px;
-    background: none; border: none; color: var(--muted);
-    cursor: pointer; font-size: 16px; padding: 4px;
-    -webkit-tap-highlight-color: transparent;
+  #hold-btn.on{background:var(--accent);border-color:var(--accent);transform:scale(.95)}
+  #hold-btn svg{width:28px;height:28px;pointer-events:none}
+
+  /* SLIDE */
+  #slide-panel{display:none;flex-direction:column;align-items:center;gap:10px;width:100%}
+  .slide-track{
+    position:relative;width:210px;height:54px;background:var(--surface2);
+    border:1px solid var(--border);border-radius:27px;display:flex;align-items:center;
+    padding:0 5px;overflow:hidden;cursor:pointer;
   }
-  .setup-hint { font-size: 11px; color: var(--muted); line-height: 1.5; }
-  .setup-hint a { color: var(--blue); text-decoration: none; }
-  .start-btn {
-    width: 100%; background: var(--accent); color: #fff;
-    border: none; border-radius: 10px; padding: 14px;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 15px; font-weight: 600; cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-    -webkit-tap-highlight-color: transparent;
+  .slide-track.on{border-color:var(--accent);background:var(--accent-dim)}
+  .slide-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent-dim);border-radius:27px;pointer-events:none}
+  .slide-thumb{
+    width:44px;height:44px;border-radius:50%;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;position:relative;z-index:2;
+    box-shadow:0 2px 10px rgba(0,0,0,.3);flex-shrink:0;touch-action:none;cursor:grab;
   }
-  .start-btn:active { opacity: 0.85; transform: scale(0.98); }
-  .theme-toggle {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 20px; padding: 6px 12px; font-size: 12px;
-    color: var(--muted); cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
-    -webkit-tap-highlight-color: transparent;
+  .slide-thumb.dragging{cursor:grabbing}
+  .slide-thumb svg{width:20px;height:20px;pointer-events:none}
+  .slide-hint{flex:1;text-align:center;font-size:12px;font-weight:600;color:var(--muted);pointer-events:none;padding-left:4px;position:relative;z-index:2;transition:color .2s}
+  .slide-track.on .slide-hint{color:var(--accent)}
+
+  .mic-caption{text-align:center}
+  .mic-caption strong{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+  .mic-caption small{font-size:11px;color:var(--muted)}
+
+  .lang-row{display:flex;gap:6px;align-items:center}
+  .lang-label{font-size:11px;color:var(--muted)}
+  .lang-btn{
+    font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;
+    border:1px solid var(--border);background:var(--surface2);color:var(--muted);
+    cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all .15s;
+  }
+  .lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .status-bar{display:flex;align-items:center;gap:8px}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
+  .status-dot.on{background:var(--green);animation:blink 1s infinite}
+  #status-text{font-size:12px;color:var(--muted)}
+
+  /* HEARD */
+  .heard-strip{
+    margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:9px 13px;display:flex;align-items:flex-start;gap:10px;
+    min-height:44px;max-height:72px;overflow:hidden;
+  }
+  .heard-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent);padding-right:10px;border-right:1px solid var(--border);
+    padding-top:2px;white-space:nowrap;flex-shrink:0;
+  }
+  #heard-text{
+    font-size:13px;color:var(--text);line-height:1.5;flex:1;font-style:italic;overflow:hidden;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  }
+  #heard-text.empty{color:var(--muted);font-style:normal}
+
+  /* PILLS */
+  .pills-row{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:8px 16px 2px;scrollbar-width:none}
+  .pills-row::-webkit-scrollbar{display:none}
+  .pill{
+    font-size:11px;font-weight:500;padding:5px 11px;border-radius:20px;
+    background:var(--surface);border:1px solid var(--border);color:var(--muted);
+    cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;
+  }
+  .pill:active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  /* FEED */
+  .feed-header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 4px}
+  .feed-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .clear-btn{font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+  .clear-btn:active{color:var(--accent)}
+  #feed{flex:1;padding:0 16px 28px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+
+  .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;text-align:center;gap:10px;color:var(--muted)}
+  .empty-icon{font-size:36px;opacity:.35}
+  .empty p{font-size:13px;line-height:1.65}
+
+  /* INTEL CARD */
+  .intel-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    overflow:hidden;box-shadow:var(--shadow);flex-shrink:0;
+    animation:rise .3s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .card-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 13px;background:var(--surface2);border-bottom:1px solid var(--border);
+  }
+  .card-topic{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--blue)}
+  .card-time{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)}
+
+  /* SECTIONS */
+  .card-section{padding:10px 13px;border-bottom:1px solid var(--border)}
+  .card-section:last-child{border-bottom:none}
+  .section-label{
+    font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px;
+  }
+  .section-label.fact   {color:var(--green)}
+  .section-label.counter{color:var(--accent)}
+  .section-label.context{color:var(--blue)}
+
+  /* BULLET POINTS */
+  .bullets{display:flex;flex-direction:column;gap:4px}
+  .bullet{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--text)}
+  .bullet-dot{
+    width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;
+  }
+  .fact-dot   {background:var(--green)}
+  .counter-dot{background:var(--accent)}
+  .context-dot{background:var(--blue)}
+  .bullet strong{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--amber);font-weight:600}
+
+  /* STREAMING shimmer */
+  .streaming-cursor{
+    display:inline-block;width:2px;height:12px;
+    background:var(--accent);margin-left:2px;vertical-align:middle;
+    animation:cur .7s step-end infinite;
+  }
+  @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
+
+  .err-card{
+    background:var(--accent-dim);border:1px solid rgba(232,69,90,.25);border-radius:12px;
+    padding:13px;font-size:13px;color:var(--accent);line-height:1.5;flex-shrink:0;
   }
 
-  /* ── APP SCREEN ── */
-  #app-screen { display: none; flex-direction: column; flex: 1; min-height: 100vh; }
-  #app-screen.visible { display: flex; }
-
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 11px 16px;
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
+  #toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+    background:var(--surface2);border:1px solid var(--border);border-radius:24px;padding:10px 18px;
+    font-size:13px;color:var(--text);transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .3s;
+    opacity:0;pointer-events:none;z-index:200;white-space:nowrap;
   }
-  .hdr-left { display: flex; align-items: center; gap: 8px; }
-  .live-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--border); transition: background 0.3s;
-    flex-shrink: 0;
-  }
-  .live-dot.on {
-    background: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-dim);
-    animation: blink 1s ease-in-out infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .wordmark {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px; font-weight: 600; letter-spacing: 0.05em;
-  }
-  .wordmark span { color: var(--accent); }
-  .hdr-right { display: flex; align-items: center; gap: 8px; }
-  .q-count {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: var(--muted);
-  }
-
-  /* ── MIC ZONE ── */
-  .mic-zone {
-    padding: 20px 16px 14px;
-    display: flex; flex-direction: column; align-items: center; gap: 16px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-  }
-
-  /* Slide toggle mic */
-  .slide-track {
-    position: relative;
-    width: 220px; height: 60px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 30px;
-    display: flex; align-items: center;
-    padding: 0 6px;
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    overflow: hidden;
-  }
-  .slide-track.active {
-    border-color: var(--accent);
-    background: var(--accent-dim);
-  }
-  .slide-fill {
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 0%;
-    background: var(--accent-dim);
-    border-radius: 30px;
-    transition: width 0.3s ease;
-    pointer-events: none;
-  }
-  .slide-thumb {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    position: relative; z-index: 2;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    transition: transform 0.2s;
-    flex-shrink: 0;
-    cursor: grab;
-  }
-  .slide-thumb.dragging { cursor: grabbing; }
-  .slide-thumb svg { width: 22px; height: 22px; }
-  .slide-hint {
-    flex: 1;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 0.04em;
-    pointer-events: none;
-    padding-left: 4px;
-    transition: color 0.2s;
-    position: relative; z-index: 2;
-  }
-  .slide-track.active .slide-hint { color: var(--accent); }
-
-  /* Language selector */
-  .lang-row {
-    display: flex; gap: 8px; align-items: center;
-  }
-  .lang-label { font-size: 11px; color: var(--muted); }
-  .lang-btn {
-    font-size: 11px; font-weight: 600;
-    padding: 4px 12px; border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface2); color: var(--muted);
-    cursor: pointer; transition: all 0.15s;
-    font-family: 'IBM Plex Sans', sans-serif;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .lang-btn.active {
-    background: var(--accent); border-color: var(--accent); color: #fff;
-  }
-
-  /* Status bar */
-  .status-bar {
-    display: flex; align-items: center; gap: 10px;
-  }
-  .status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--muted); flex-shrink: 0;
-  }
-  .status-dot.on { background: var(--green); animation: blink 1s infinite; }
-  #status-text { font-size: 12px; color: var(--muted); }
-
-  /* ── TRANSCRIPT STRIP ── */
-  .heard-strip {
-    margin: 10px 16px 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    display: flex; align-items: flex-start; gap: 10px;
-    min-height: 50px;
-    max-height: 80px;
-    overflow: hidden;
-  }
-  .heard-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 8px; font-weight: 600; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--accent);
-    padding-right: 10px; border-right: 1px solid var(--border);
-    padding-top: 2px; white-space: nowrap; flex-shrink: 0;
-  }
-  #heard-text {
-    font-size: 13px; color: var(--text);
-    line-height: 1.5; flex: 1; font-style: italic;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-  }
-  #heard-text.empty { color: var(--muted); font-style: normal; }
-
-  /* ── QUICK PILLS ── */
-  .pills-row {
-    display: flex; flex-wrap: nowrap; overflow-x: auto;
-    gap: 6px; padding: 10px 16px 4px;
-    scrollbar-width: none;
-  }
-  .pills-row::-webkit-scrollbar { display: none; }
-  .pill {
-    font-size: 11px; font-weight: 500;
-    padding: 5px 11px; border-radius: 20px;
-    background: var(--surface); border: 1px solid var(--border);
-    color: var(--muted); cursor: pointer; transition: all 0.15s;
-    white-space: nowrap; flex-shrink: 0;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .pill:active { background: var(--accent); border-color: var(--accent); color: #fff; }
-
-  /* ── FEED ── */
-  .feed-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 16px 6px;
-  }
-  .feed-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px; letter-spacing: 0.14em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .clear-btn {
-    font-size: 11px; color: var(--muted);
-    background: none; border: none; cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .clear-btn:active { color: var(--accent); }
-
-  #feed {
-    flex: 1;
-    padding: 0 16px 24px;
-    display: flex; flex-direction: column; gap: 10px;
-    overflow-y: auto;
-  }
-
-  .empty {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 40px 24px; text-align: center; gap: 10px; color: var(--muted);
-  }
-  .empty-icon { font-size: 40px; opacity: 0.35; }
-  .empty p { font-size: 13px; line-height: 1.65; }
-
-  /* Loading */
-  .loading-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px; background: var(--surface);
-    border: 1px solid var(--border); border-radius: 12px;
-    flex-shrink: 0;
-  }
-  .dots { display: flex; gap: 5px; }
-  .dots i {
-    display: block; width: 6px; height: 6px;
-    border-radius: 50%; background: var(--accent);
-    animation: db 1s ease-in-out infinite; font-style: normal;
-  }
-  .dots i:nth-child(2) { animation-delay: 0.16s; }
-  .dots i:nth-child(3) { animation-delay: 0.32s; }
-  @keyframes db { 0%,80%,100%{transform:scale(0.5);opacity:0.3} 40%{transform:scale(1);opacity:1} }
-  .loading-txt { font-size: 12px; color: var(--muted); }
-
-  /* Intel card */
-  .intel-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px; overflow: hidden;
-    box-shadow: var(--shadow); flex-shrink: 0;
-    animation: rise 0.35s cubic-bezier(0.22,1,0.36,1);
-  }
-  @keyframes rise { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  .card-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 9px 13px;
-    background: var(--surface2); border-bottom: 1px solid var(--border);
-  }
-  .card-topic {
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.07em; text-transform: uppercase; color: var(--blue);
-  }
-  .card-time {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px; color: var(--muted);
-  }
-  .card-rows { padding: 12px 13px; display: flex; flex-direction: column; gap: 10px; }
-  .row { display: flex; gap: 8px; align-items: flex-start; }
-  .tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 7px; font-weight: 600; letter-spacing: 0.1em;
-    padding: 3px 6px; border-radius: 4px;
-    white-space: nowrap; margin-top: 2px; flex-shrink: 0;
-  }
-  .tag-fact { background: var(--green-dim); color: var(--green); border: 1px solid rgba(31,217,160,0.2); }
-  .tag-cnt  { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(232,69,90,0.2); }
-  .tag-ctx  { background: rgba(91,156,246,0.1); color: var(--blue); border: 1px solid rgba(91,156,246,0.2); }
-  .row-text { font-size: 13px; line-height: 1.55; color: var(--text); flex: 1; }
-  .row-text strong {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px; color: var(--amber); font-weight: 600;
-  }
-
-  /* Error */
-  .err-card {
-    background: var(--accent-dim);
-    border: 1px solid rgba(232,69,90,0.25);
-    border-radius: 12px; padding: 13px;
-    font-size: 13px; color: var(--accent); line-height: 1.5;
-    flex-shrink: 0;
-  }
-
-  /* Toast */
-  #toast {
-    position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(60px);
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 24px; padding: 10px 18px;
-    font-size: 13px; color: var(--text);
-    transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), opacity 0.3s;
-    opacity: 0; pointer-events: none; z-index: 200; white-space: nowrap;
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-  @media print {
-    [data-theme="dark"] { filter: none; }
-    body { background: #fff; color: #000; }
-  }
+  #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 </style>
 </head>
 <body>
 
-<!-- ═══ SETUP ═══════════════════════════════════════ -->
+<!-- SETUP -->
 <div id="setup-screen">
   <div>
     <div class="setup-logo">DEBATE<em>INTEL</em></div>
     <div style="height:6px"></div>
-    <div class="setup-sub">Real-time debate assistant for Fahad Ahsan.<br>Continuous listening · Auto intel · Hindi + English</div>
+    <div class="setup-sub">Real-time debate assistant for Fahad Ahsan.<br>Streaming · Bullets · Hindi + English · Instant</div>
   </div>
   <div class="setup-card">
     <label>🔑 Anthropic API Key</label>
@@ -431,16 +261,15 @@
     </div>
     <div class="setup-hint">
       Get free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys.<br>
-      Key stored in memory only — never saved anywhere.
+      Stored in memory only — never saved anywhere.
     </div>
     <button class="start-btn" onclick="startApp()">Start DebateIntel →</button>
   </div>
   <button class="theme-toggle" onclick="toggleTheme()">☀ / ☾</button>
 </div>
 
-<!-- ═══ APP ══════════════════════════════════════════ -->
+<!-- APP -->
 <div id="app-screen">
-
   <header>
     <div class="hdr-left">
       <div class="live-dot" id="live-dot"></div>
@@ -453,460 +282,457 @@
   </header>
 
   <div class="mic-zone">
-
-    <!-- Slide toggle -->
-    <div class="slide-track" id="slide-track">
-      <div class="slide-fill" id="slide-fill"></div>
-      <div class="slide-thumb" id="slide-thumb">
-        <svg viewBox="0 0 24 24" fill="none">
-          <rect x="9" y="2" width="6" height="12" rx="3" fill="white"/>
-          <path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="white" stroke-width="2" stroke-linecap="round"/>
-          <line x1="12" y1="18" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
-          <line x1="9" y1="22" x2="15" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+    <div class="mode-tabs">
+      <div class="mode-tab active" id="tab-hold" onclick="switchMode('hold')">
+        Press &amp; Hold<small>Release → intel</small>
       </div>
-      <div class="slide-hint" id="slide-hint">Slide → to record</div>
+      <div class="mode-tab" id="tab-slide" onclick="switchMode('slide')">
+        Slide Toggle<small>Continuous session</small>
+      </div>
     </div>
 
-    <!-- Language -->
+    <!-- HOLD -->
+    <div id="hold-panel">
+      <div class="mic-ring-wrap">
+        <div class="mic-ring" id="hold-ring"></div>
+        <button id="hold-btn"
+          ontouchstart="holdStart(event)" ontouchend="holdEnd(event)" ontouchcancel="holdEnd(event)"
+          onmousedown="holdStart(event)" onmouseup="holdEnd(event)" onmouseleave="holdEnd(event)">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect id="sv-body" x="9" y="2" width="6" height="12" rx="3" fill="var(--muted)"/>
+            <path id="sv-arc" d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
+            <line id="sv-stem" x1="12" y1="18" x2="12" y2="22" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
+            <line id="sv-base" x1="9"  y1="22" x2="15" y2="22" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="mic-caption">
+        <strong id="hold-label">Hold to Speak</strong>
+        <small id="hold-sub">Release → instant streaming intel</small>
+      </div>
+    </div>
+
+    <!-- SLIDE -->
+    <div id="slide-panel">
+      <div class="slide-track" id="slide-track">
+        <div class="slide-fill" id="slide-fill"></div>
+        <div class="slide-thumb" id="slide-thumb">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="9" y="2" width="6" height="12" rx="3" fill="white"/>
+            <path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <line x1="12" y1="18" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <line x1="9"  y1="22" x2="15" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="slide-hint" id="slide-hint">Slide → to record</div>
+      </div>
+      <div class="mic-caption">
+        <strong id="slide-label">Continuous Mode</strong>
+        <small>Intel streams in after each pause</small>
+      </div>
+    </div>
+
     <div class="lang-row">
-      <span class="lang-label">Language:</span>
+      <span class="lang-label">Lang:</span>
       <button class="lang-btn active" id="btn-en" onclick="setLang('en-IN')">English</button>
-      <button class="lang-btn" id="btn-hi" onclick="setLang('hi-IN')">हिंदी</button>
-      <button class="lang-btn" id="btn-bi" onclick="setLang('both')">Both</button>
+      <button class="lang-btn"        id="btn-hi" onclick="setLang('hi-IN')">हिंदी</button>
+      <button class="lang-btn"        id="btn-bi" onclick="setLang('both')">Both</button>
     </div>
-
-    <!-- Status -->
     <div class="status-bar">
       <div class="status-dot" id="status-dot"></div>
-      <span id="status-text">Slide to start continuous recording</span>
+      <span id="status-text">Choose mode and speak</span>
     </div>
-
   </div>
 
-  <!-- Transcript -->
   <div class="heard-strip">
     <div class="heard-tag">Live</div>
-    <div id="heard-text" class="empty">Speech appears here as you talk…</div>
+    <div id="heard-text" class="empty">Speech appears here…</div>
   </div>
 
-  <!-- Quick pills -->
   <div class="pills-row">
     <div class="pill" onclick="quickSearch('per capita income India 2024')">🇮🇳 Per Capita</div>
     <div class="pill" onclick="quickSearch('GDP growth India China 2024')">📊 GDP</div>
     <div class="pill" onclick="quickSearch('unemployment India youth 2024')">📉 Jobs</div>
-    <div class="pill" onclick="quickSearch('India poverty HDI ranking 2024')">🏘 Poverty</div>
+    <div class="pill" onclick="quickSearch('India poverty HDI ranking')">🏘 Poverty</div>
     <div class="pill" onclick="quickSearch('climate change India emissions')">🌍 Climate</div>
-    <div class="pill" onclick="quickSearch('India inflation food prices 2024')">💹 Inflation</div>
+    <div class="pill" onclick="quickSearch('India inflation food prices')">💹 Inflation</div>
     <div class="pill" onclick="quickSearch('India education literacy rate')">📚 Education</div>
-    <div class="pill" onclick="quickSearch('India US China relations 2024')">🤝 Geopolitics</div>
+    <div class="pill" onclick="quickSearch('India US China geopolitics')">🤝 Geopolitics</div>
   </div>
 
-  <!-- Feed header -->
   <div class="feed-header">
     <span class="feed-label">Intel Feed</span>
     <button class="clear-btn" onclick="clearFeed()">Clear all</button>
   </div>
-
-  <!-- Feed -->
   <div id="feed">
     <div class="empty">
       <div class="empty-icon">🎙</div>
-      <p>Slide right to begin continuous recording.<br>Intel cards appear automatically<br>after each pause in speech.</p>
+      <p>Hold mic or slide to start.<br>Streaming intel appears in under 2 sec.</p>
     </div>
   </div>
-
 </div>
 
 <div id="toast"></div>
 
 <script>
-  /* ── State ─────────────────────────────────────── */
-  let API_KEY = '';
-  let isRecording = false;
-  let recognition = null;
-  let currentLang = 'en-IN';
-  let queryCount = 0;
-  let pendingTranscript = '';
-  let silenceTimer = null;
-  let isFetching = false;
-  let feedIsEmpty = true;
-  const SILENCE_DELAY = 1800; // ms of silence before auto-fetch
+/* STATE */
+let API_KEY='', currentLang='en-IN', queryCount=0;
+let recognition=null, isRecording=false, isFetching=false, feedIsEmpty=true;
+let pendingFinal='', silenceTimer=null, currentMode='hold', loadingId=null;
+const SILENCE_MS=1800;
 
-  /* ── Theme ─────────────────────────────────────── */
-  function toggleTheme() {
-    document.documentElement.dataset.theme =
-      document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  }
+/* THEME */
+function toggleTheme(){
+  document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  updateMicColor(isRecording);
+}
 
-  /* ── Setup ─────────────────────────────────────── */
-  function toggleKeyVisible() {
-    const inp = document.getElementById('api-key-input');
-    inp.type = inp.type === 'password' ? 'text' : 'password';
-  }
-  function startApp() {
-    const key = document.getElementById('api-key-input').value.trim();
-    if (!key.startsWith('sk-ant-')) { showToast('⚠ Key should start with sk-ant-…'); return; }
-    API_KEY = key;
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('app-screen').classList.add('visible');
-    initSlide();
-    showToast('✓ Ready — slide to start recording');
-  }
-  document.getElementById('api-key-input').addEventListener('keydown', e => { if (e.key === 'Enter') startApp(); });
+/* SETUP */
+function toggleKeyVisible(){const i=document.getElementById('api-key-input');i.type=i.type==='password'?'text':'password'}
+function startApp(){
+  const key=document.getElementById('api-key-input').value.trim();
+  if(!key.startsWith('sk-ant-')){showToast('⚠ Key should start with sk-ant-…');return}
+  API_KEY=key;
+  document.getElementById('setup-screen').style.display='none';
+  document.getElementById('app-screen').classList.add('visible');
+  initSlide();
+  showToast('✓ Ready — streaming intel enabled');
+}
+document.getElementById('api-key-input').addEventListener('keydown',e=>{if(e.key==='Enter')startApp()});
 
-  /* ── Language ──────────────────────────────────── */
-  function setLang(lang) {
-    currentLang = lang;
-    ['en','hi','bi'].forEach(l => document.getElementById('btn-'+l).classList.remove('active'));
-    if (lang === 'en-IN') document.getElementById('btn-en').classList.add('active');
-    else if (lang === 'hi-IN') document.getElementById('btn-hi').classList.add('active');
-    else document.getElementById('btn-bi').classList.add('active');
-    if (isRecording) { stopRecognition(); startRecognition(); }
-  }
+/* MODE */
+function switchMode(mode){
+  if(isRecording)stopRecognition(true);
+  currentMode=mode;
+  document.getElementById('tab-hold').classList.toggle('active',mode==='hold');
+  document.getElementById('tab-slide').classList.toggle('active',mode==='slide');
+  document.getElementById('hold-panel').style.display=mode==='hold'?'flex':'none';
+  document.getElementById('slide-panel').style.display=mode==='slide'?'flex':'none';
+  setStatus('Choose mode and speak');
+}
 
-  /* ── Slide control ─────────────────────────────── */
-  function initSlide() {
-    const track = document.getElementById('slide-track');
-    const thumb = document.getElementById('slide-thumb');
-    let dragging = false;
-    let startX = 0;
-    let thumbX = 0;
-    const TRACK_PAD = 6;
+/* LANG */
+function setLang(lang){
+  currentLang=lang;
+  ['en','hi','bi'].forEach(l=>document.getElementById('btn-'+l).classList.remove('active'));
+  if(lang==='en-IN')document.getElementById('btn-en').classList.add('active');
+  else if(lang==='hi-IN')document.getElementById('btn-hi').classList.add('active');
+  else document.getElementById('btn-bi').classList.add('active');
+  if(isRecording){stopRecognition(false);startRecognition()}
+}
 
-    function getTrackWidth() { return track.offsetWidth - thumb.offsetWidth - TRACK_PAD * 2; }
-    function getThreshold()  { return getTrackWidth() * 0.55; }
+/* MIC SVG COLOR */
+function updateMicColor(on){
+  const c=on?'#ffffff':'var(--muted)';
+  ['sv-body'].forEach(id=>{const e=document.getElementById(id);if(e)e.setAttribute('fill',c)});
+  ['sv-arc','sv-stem','sv-base'].forEach(id=>{const e=document.getElementById(id);if(e)e.setAttribute('stroke',c)});
+}
 
-    function onStart(clientX) {
-      dragging = true;
-      startX = clientX;
-      thumbX = isRecording ? getTrackWidth() : 0;
-      thumb.classList.add('dragging');
-    }
-    function onMove(clientX) {
-      if (!dragging) return;
-      const dx = clientX - startX;
-      let nx = Math.max(0, Math.min(thumbX + dx, getTrackWidth()));
-      thumb.style.transform = `translateX(${nx}px)`;
-      document.getElementById('slide-fill').style.width = ((nx / getTrackWidth()) * 100) + '%';
-    }
-    function onEnd(clientX) {
-      if (!dragging) return;
-      dragging = false;
-      thumb.classList.remove('dragging');
-      const dx = clientX - startX;
-      const nx = thumbX + dx;
-      const thr = getThreshold();
-      if (!isRecording && nx > thr) {
-        snapTo(getTrackWidth());
-        beginRecording();
-      } else if (isRecording && nx < getTrackWidth() - thr) {
-        snapTo(0);
-        endRecording();
-      } else {
-        snapTo(isRecording ? getTrackWidth() : 0);
-      }
-    }
+/* HOLD */
+function holdStart(e){
+  e.preventDefault();e.stopPropagation();
+  if(isRecording)return;
+  pendingFinal='';
+  startRecording();
+  document.getElementById('hold-btn').classList.add('on');
+  document.getElementById('hold-ring').classList.add('on');
+  document.getElementById('hold-label').textContent='Listening…';
+  document.getElementById('hold-sub').textContent='Release → streaming intel';
+  updateMicColor(true);
+}
+function holdEnd(e){
+  e.preventDefault();e.stopPropagation();
+  if(!isRecording||currentMode!=='hold')return;
+  document.getElementById('hold-btn').classList.remove('on');
+  document.getElementById('hold-ring').classList.remove('on');
+  document.getElementById('hold-label').textContent='Hold to Speak';
+  document.getElementById('hold-sub').textContent='Release → instant streaming intel';
+  updateMicColor(false);
+  const captured=pendingFinal.trim();
+  stopRecognition(false);
+  setTimeout(()=>{
+    if(captured&&captured.length>2)fetchIntel(captured);
+    else setHeard('Nothing detected — try again.',true);
+  },250);
+}
 
-    function snapTo(x) {
-      thumb.style.transition = 'transform 0.25s ease';
-      thumb.style.transform = `translateX(${x}px)`;
-      document.getElementById('slide-fill').style.width = ((x / getTrackWidth()) * 100) + '%';
-      setTimeout(() => thumb.style.transition = '', 260);
-    }
+/* SLIDE */
+function initSlide(){
+  const track=document.getElementById('slide-track');
+  const thumb=document.getElementById('slide-thumb');
+  let dragging=false,startX=0,baseX=0;
+  const PAD=5;
+  const tw=()=>track.offsetWidth-thumb.offsetWidth-PAD*2;
+  const thresh=()=>tw()*.5;
+  const onStart=clientX=>{dragging=true;startX=clientX;baseX=isRecording?tw():0;thumb.classList.add('dragging')};
+  const onMove=clientX=>{
+    if(!dragging)return;
+    const nx=Math.max(0,Math.min(baseX+clientX-startX,tw()));
+    thumb.style.transition='none';thumb.style.transform=`translateX(${nx}px)`;
+    document.getElementById('slide-fill').style.width=(nx/tw()*100)+'%';
+  };
+  const onEnd=clientX=>{
+    if(!dragging)return;dragging=false;thumb.classList.remove('dragging');
+    const nx=baseX+clientX-startX;
+    if(!isRecording&&nx>thresh()){snapSlide(tw());startContinuous()}
+    else if(isRecording&&nx<tw()-thresh()){snapSlide(0);stopContinuous()}
+    else snapSlide(isRecording?tw():0);
+  };
+  thumb.addEventListener('touchstart',e=>{e.preventDefault();onStart(e.touches[0].clientX)},{passive:false});
+  window.addEventListener('touchmove',e=>{if(dragging){e.preventDefault();onMove(e.touches[0].clientX)}},{passive:false});
+  window.addEventListener('touchend',e=>{if(dragging)onEnd(e.changedTouches[0].clientX)});
+  thumb.addEventListener('mousedown',e=>onStart(e.clientX));
+  window.addEventListener('mousemove',e=>{if(dragging)onMove(e.clientX)});
+  window.addEventListener('mouseup',e=>{if(dragging)onEnd(e.clientX)});
+  track.addEventListener('click',e=>{
+    if(thumb.contains(e.target))return;
+    if(!isRecording){snapSlide(tw());startContinuous()}else{snapSlide(0);stopContinuous()}
+  });
+}
+function snapSlide(x){
+  const thumb=document.getElementById('slide-thumb'),track=document.getElementById('slide-track');
+  const tw=track.offsetWidth-thumb.offsetWidth-10;
+  thumb.style.transition='transform .25s ease';thumb.style.transform=`translateX(${x}px)`;
+  document.getElementById('slide-fill').style.width=(x/tw*100)+'%';
+  setTimeout(()=>thumb.style.transition='',260);
+}
+function startContinuous(){
+  pendingFinal='';startRecording();
+  document.getElementById('slide-track').classList.add('on');
+  document.getElementById('slide-hint').textContent='Recording… slide ← to stop';
+  document.getElementById('slide-label').textContent='Recording…';
+}
+function stopContinuous(){
+  const cap=pendingFinal.trim();stopRecognition(false);
+  document.getElementById('slide-track').classList.remove('on');
+  document.getElementById('slide-hint').textContent='Slide → to record';
+  document.getElementById('slide-label').textContent='Continuous Mode';
+  if(cap.length>2&&!isFetching){fetchIntel(cap);pendingFinal=''}
+  setStatus('Session ended — slide to restart');
+}
 
-    // Touch
-    thumb.addEventListener('touchstart', e => { e.preventDefault(); onStart(e.touches[0].clientX); }, { passive: false });
-    window.addEventListener('touchmove',  e => { if (dragging) { e.preventDefault(); onMove(e.touches[0].clientX); } }, { passive: false });
-    window.addEventListener('touchend',   e => { if (dragging) onEnd(e.changedTouches[0].clientX); });
-    // Mouse
-    thumb.addEventListener('mousedown', e => onStart(e.clientX));
-    window.addEventListener('mousemove', e => { if (dragging) onMove(e.clientX); });
-    window.addEventListener('mouseup',   e => { if (dragging) onEnd(e.clientX); });
-
-    // Tap on track to toggle
-    track.addEventListener('click', e => {
-      if (e.target === thumb || thumb.contains(e.target)) return;
-      if (!isRecording) { snapTo(getTrackWidth()); beginRecording(); }
-      else              { snapTo(0);               endRecording(); }
-    });
-  }
-
-  /* ── Recording ─────────────────────────────────── */
-  function beginRecording() {
-    if (isRecording) return;
-    isRecording = true;
-    document.getElementById('live-dot').classList.add('on');
-    document.getElementById('status-dot').classList.add('on');
-    document.getElementById('slide-track').classList.add('active');
-    document.getElementById('slide-hint').textContent = 'Recording… slide ← to stop';
-    setStatus('Listening — speak freely…');
-    setHeard('', false);
-    startRecognition();
-    // Suppress any audio feedback — unlock AudioContext silently
-    try {
-      const ac = new (window.AudioContext || window.webkitAudioContext)();
-      const buf = ac.createBuffer(1, 1, 22050);
-      const src = ac.createBufferSource();
-      src.buffer = buf; src.connect(ac.destination); src.start(0);
-      setTimeout(() => ac.close(), 500);
-    } catch(e) {}
-  }
-
-  function endRecording() {
-    if (!isRecording) return;
-    isRecording = false;
+/* RECOGNITION */
+function startRecording(){
+  isRecording=true;
+  document.getElementById('live-dot').classList.add('on');
+  document.getElementById('status-dot').classList.add('on');
+  setStatus('Listening…');setHeard('',false);startRecognition();
+}
+function startRecognition(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('⚠ Use Chrome on Android for speech support');stopRecording();return}
+  recognition=new SR();
+  recognition.continuous=true;recognition.interimResults=true;
+  recognition.lang=currentLang==='both'?'en-IN':currentLang;
+  recognition.onresult=e=>{
     clearTimeout(silenceTimer);
-    document.getElementById('live-dot').classList.remove('on');
-    document.getElementById('status-dot').classList.remove('on');
-    document.getElementById('slide-track').classList.remove('active');
-    document.getElementById('slide-hint').textContent = 'Slide → to record';
-    setStatus('Session ended — slide to restart');
-    stopRecognition();
-    // Flush any remaining transcript
-    if (pendingTranscript.trim().length > 4 && !isFetching) {
-      fetchIntel(pendingTranscript.trim());
-      pendingTranscript = '';
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
     }
-  }
-
-  function startRecognition() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { showToast('⚠ Speech API not available — use Chrome on Android'); return; }
-
-    recognition = new SR();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = currentLang === 'both' ? 'en-IN' : currentLang;
-    // For "both" mode cycle: recognition restarted with hi-IN after first result batch
-    let langCycle = currentLang === 'both';
-    let useHindi = false;
-
-    recognition.onresult = (event) => {
-      clearTimeout(silenceTimer);
-      let interim = '', final = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) final += event.results[i][0].transcript + ' ';
-        else interim += event.results[i][0].transcript;
-      }
-      const spoken = (final || interim).trim();
-      if (spoken) {
-        pendingTranscript += (final || '');
-        setHeard(spoken, false);
-        setStatus('Hearing… pausing will fetch intel');
-      }
-      // Silence detection: after user stops talking, trigger intel
-      if (final) {
-        silenceTimer = setTimeout(() => {
-          if (pendingTranscript.trim().length > 4 && !isFetching) {
-            const chunk = pendingTranscript.trim();
-            pendingTranscript = '';
-            fetchIntel(chunk);
+    const display=(final||interim).trim();
+    if(display)setHeard(display,false);
+    if(final){
+      pendingFinal+=final;
+      if(currentMode==='slide'){
+        setStatus('Heard — pause to stream intel');
+        silenceTimer=setTimeout(()=>{
+          if(pendingFinal.trim().length>3&&!isFetching){
+            const chunk=pendingFinal.trim();pendingFinal='';fetchIntel(chunk);
           }
-        }, SILENCE_DELAY);
+        },SILENCE_MS);
       }
-    };
+    }
+  };
+  recognition.onerror=e=>{
+    if(e.error==='not-allowed'){showToast('⚠ Mic denied — allow in Chrome site settings');stopRecording()}
+    else if(e.error==='no-speech'){if(isRecording)safeRestart()}
+    else{if(isRecording)setTimeout(safeRestart,800)}
+  };
+  recognition.onend=()=>{if(isRecording&&currentMode==='slide')safeRestart()};
+  try{recognition.start()}catch(e){}
+}
+function safeRestart(){if(!isRecording)return;try{recognition.stop()}catch(e){}setTimeout(()=>{if(isRecording)startRecognition()},300)}
+function stopRecognition(resetState){
+  clearTimeout(silenceTimer);
+  try{if(recognition){recognition.onend=null;recognition.onerror=null;recognition.stop()}}catch(e){}
+  recognition=null;if(resetState)stopRecording();
+}
+function stopRecording(){
+  isRecording=false;
+  document.getElementById('live-dot').classList.remove('on');
+  document.getElementById('status-dot').classList.remove('on');
+  updateMicColor(false);
+}
 
-    recognition.onerror = (e) => {
-      if (e.error === 'not-allowed') {
-        showToast('⚠ Mic permission denied — allow in Chrome settings');
-        endRecording();
-      } else if (e.error === 'no-speech') {
-        // Normal — just restart if still recording
-        if (isRecording) restartRecognition();
-      } else {
-        setStatus('Error: ' + e.error + ' — restarting…');
-        if (isRecording) setTimeout(restartRecognition, 1000);
-      }
-    };
+/* QUICK PILL */
+function quickSearch(topic){setHeard(topic,false);fetchIntel(topic)}
 
-    recognition.onend = () => {
-      // Auto-restart to keep continuous session alive
-      if (isRecording) restartRecognition();
-    };
+/* ═══ STREAMING CLAUDE API — NO WEB SEARCH ═══ */
+async function fetchIntel(transcript){
+  if(!transcript||transcript.length<3)return;
+  isFetching=true;setStatus('Streaming intel…');
 
-    recognition.start();
-  }
+  // Create card immediately with skeleton
+  const cardId='card-'+Date.now();
+  loadingId=cardId;
+  ensureFeed();
+  const card=createSkeletonCard(cardId, transcript);
+  document.getElementById('feed').appendChild(card);
+  scrollFeed();
 
-  function restartRecognition() {
-    if (!isRecording) return;
-    try { recognition.stop(); } catch(e) {}
-    setTimeout(() => { if (isRecording) startRecognition(); }, 300);
-  }
-
-  function stopRecognition() {
-    try { if (recognition) { recognition.onend = null; recognition.stop(); } } catch(e) {}
-    recognition = null;
-  }
-
-  /* ── Quick pill ────────────────────────────────── */
-  function quickSearch(topic) {
-    setHeard(topic, false);
-    fetchIntel(topic);
-  }
-
-  /* ── Claude API ────────────────────────────────── */
-  async function fetchIntel(transcript) {
-    if (!transcript || transcript.length < 3) return;
-    isFetching = true;
-    setStatus('Fetching intel…');
-    addLoadingCard(transcript);
-
-    const prompt = `You are a real-time debate assistant. The debater just said the following during their debate session. Identify the core debatable topic and give concise, accurate intel.
-
-Spoken: "${transcript}"
-
-Respond ONLY in this exact JSON (no markdown, no preamble):
+  const prompt=`Debate assistant. Given spoken input, reply ONLY as JSON (no markdown):
 {
-  "topic": "Core topic in 3-5 words",
-  "fact": "One strong supporting fact or statistic with key numbers wrapped in [[ ]]. Max 2 lines.",
-  "counter": "The strongest counterargument an opponent would raise. Max 2 lines.",
-  "context": "One critical recent development, context, or caveat."
-}`;
+  "topic":"3-5 word topic",
+  "facts":["bullet 1 with [[key number]]","bullet 2","bullet 3"],
+  "counters":["opponent arg 1","opponent arg 2","opponent arg 3"],
+  "context":["key context 1","key context 2"]
+}
+Keep each bullet under 12 words. Spoken: "${transcript}"`;
 
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API_KEY,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 1000,
-          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':API_KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001', /* Haiku = fastest model */
+        max_tokens:400,
+        stream:true,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error?.message || `HTTP ${res.status}`);
+    if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||`HTTP ${res.status}`)}
+
+    /* Stream parse */
+    const reader=res.body.getReader();
+    const decoder=new TextDecoder();
+    let buffer='',fullText='';
+
+    while(true){
+      const{done,value}=await reader.read();
+      if(done)break;
+      buffer+=decoder.decode(value,{stream:true});
+      const lines=buffer.split('\n');
+      buffer=lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data:'))continue;
+        const data=line.slice(5).trim();
+        if(data==='[DONE]')continue;
+        try{
+          const evt=JSON.parse(data);
+          if(evt.type==='content_block_delta'&&evt.delta?.text){
+            fullText+=evt.delta.text;
+            streamToCard(cardId,fullText);
+          }
+        }catch(e){}
       }
-
-      const data = await res.json();
-      let responseText = '';
-      if (data.content) {
-        for (const block of data.content) {
-          if (block.type === 'text') responseText += block.text;
-        }
-      }
-
-      const jsonMatch = responseText.match(/\{[\s\S]*?\}/);
-      if (!jsonMatch) throw new Error('No JSON in response');
-      const intel = JSON.parse(jsonMatch[0]);
-
-      queryCount++;
-      document.getElementById('q-count').textContent = queryCount + ' intel';
-      replaceLoadingCard(intel);
-
-    } catch (err) {
-      replaceLoadingWithError(err.message);
-    } finally {
-      isFetching = false;
-      if (isRecording) setStatus('Listening — speak freely…');
     }
-  }
 
-  /* ── Feed rendering ────────────────────────────── */
-  let loadingId = null;
+    /* Final parse */
+    const m=fullText.match(/\{[\s\S]*\}/);
+    if(m){
+      try{
+        const intel=JSON.parse(m[0]);
+        queryCount++;
+        document.getElementById('q-count').textContent=queryCount+' intel';
+        finalizeCard(cardId,intel);
+      }catch(e){finalizeCardRaw(cardId,fullText)}
+    }else{finalizeCardRaw(cardId,fullText)}
 
-  function ensureFeedReady() {
-    const feed = document.getElementById('feed');
-    if (feedIsEmpty) {
-      feed.innerHTML = '';
-      feedIsEmpty = false;
-    }
+  }catch(err){
+    const old=document.getElementById(cardId);
+    const d=document.createElement('div');d.className='err-card';
+    d.innerHTML=`⚠ ${esc(err.message)}<br><small style="opacity:.7;font-size:11px">Check API key or internet.</small>`;
+    if(old)old.replaceWith(d);else document.getElementById('feed').appendChild(d);
+  }finally{
+    isFetching=false;
+    if(isRecording)setStatus('Listening…');
   }
+}
 
-  function addLoadingCard(transcript) {
-    ensureFeedReady();
-    const id = 'load-' + Date.now();
-    loadingId = id;
-    const div = document.createElement('div');
-    div.id = id;
-    div.className = 'loading-row';
-    div.innerHTML = `
-      <div class="dots"><i></i><i></i><i></i></div>
-      <div class="loading-txt">Analyzing: <em>${esc(transcript.slice(0,50))}…</em></div>`;
-    document.getElementById('feed').appendChild(div);
-    scrollFeed();
-  }
+/* Card rendering */
+function createSkeletonCard(id,transcript){
+  const d=document.createElement('div');
+  d.id=id;d.className='intel-card';
+  const t=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  d.innerHTML=`
+    <div class="card-head">
+      <div class="card-topic" id="${id}-topic">Analyzing…</div>
+      <div class="card-time">${t}</div>
+    </div>
+    <div class="card-section">
+      <div class="section-label fact">▸ FACTS</div>
+      <div class="bullets" id="${id}-facts"><div class="bullet"><span class="bullet-dot fact-dot"></span><span class="streaming-cursor"></span></div></div>
+    </div>
+    <div class="card-section">
+      <div class="section-label counter">▸ COUNTERS</div>
+      <div class="bullets" id="${id}-counters"><div class="bullet"><span class="bullet-dot counter-dot"></span><span class="streaming-cursor"></span></div></div>
+    </div>
+    <div class="card-section">
+      <div class="section-label context">▸ CONTEXT</div>
+      <div class="bullets" id="${id}-context"><div class="bullet"><span class="bullet-dot context-dot"></span><span class="streaming-cursor"></span></div></div>
+    </div>`;
+  return d;
+}
 
-  function replaceLoadingCard(intel) {
-    const old = document.getElementById(loadingId);
-    const now = new Date();
-    const t = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    const factHtml  = esc(intel.fact    || '—').replace(/\[\[(.+?)\]\]/g, '<strong>$1</strong>');
-    const countHtml = esc(intel.counter || '—');
-    const ctxHtml   = esc(intel.context || '—');
+function streamToCard(id,raw){
+  /* Try partial JSON parse to update topic at least */
+  const tm=raw.match(/"topic"\s*:\s*"([^"]+)"/);
+  if(tm){const el=document.getElementById(id+'-topic');if(el)el.textContent=tm[1]}
+}
 
-    const card = document.createElement('div');
-    card.className = 'intel-card';
-    card.innerHTML = `
-      <div class="card-head">
-        <div class="card-topic">${esc(intel.topic || 'Debate Topic')}</div>
-        <div class="card-time">${t}</div>
-      </div>
-      <div class="card-rows">
-        <div class="row"><span class="tag tag-fact">FACT</span><div class="row-text">${factHtml}</div></div>
-        <div class="row"><span class="tag tag-cnt">COUNTER</span><div class="row-text">${countHtml}</div></div>
-        <div class="row"><span class="tag tag-ctx">CONTEXT</span><div class="row-text">${ctxHtml}</div></div>
-      </div>`;
+function finalizeCard(id,intel){
+  const topicEl=document.getElementById(id+'-topic');
+  if(topicEl)topicEl.textContent=intel.topic||'Debate Topic';
+  renderBullets(id+'-facts',   intel.facts||[],   'fact-dot',    'fact-dot');
+  renderBullets(id+'-counters',intel.counters||[], 'counter-dot', 'counter-dot');
+  renderBullets(id+'-context', intel.context||[],  'context-dot', 'context-dot');
+}
+function finalizeCardRaw(id,raw){
+  const el=document.getElementById(id+'-facts');
+  if(el)el.innerHTML=`<div class="bullet"><span class="bullet-dot fact-dot"></span><span>${esc(raw.slice(0,120))}</span></div>`;
+  ['counters','context'].forEach(s=>{const e=document.getElementById(id+'-'+s);if(e)e.innerHTML=''});
+}
 
-    if (old) old.replaceWith(card);
-    else document.getElementById('feed').appendChild(card);
-    scrollFeed();
-  }
+function renderBullets(containerId,items,dotClass){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  if(!items||items.length===0){el.innerHTML='';return}
+  el.innerHTML=items.map(item=>{
+    const html=esc(item).replace(/\[\[(.+?)\]\]/g,'<strong>$1</strong>');
+    return `<div class="bullet"><span class="bullet-dot ${dotClass}"></span><span>${html}</span></div>`;
+  }).join('');
+}
 
-  function replaceLoadingWithError(msg) {
-    const old = document.getElementById(loadingId);
-    const div = document.createElement('div');
-    div.className = 'err-card';
-    div.innerHTML = `⚠ ${esc(msg)}<br><small style="opacity:0.7;font-size:11px">Check API key or connection.</small>`;
-    if (old) old.replaceWith(div);
-    else document.getElementById('feed').appendChild(div);
-    scrollFeed();
-  }
+/* FEED HELPERS */
+function ensureFeed(){
+  if(feedIsEmpty){document.getElementById('feed').innerHTML='';feedIsEmpty=false}
+}
+function scrollFeed(){const f=document.getElementById('feed');setTimeout(()=>f.scrollTo({top:f.scrollHeight,behavior:'smooth'}),80)}
+function clearFeed(){
+  pendingFinal='';feedIsEmpty=true;queryCount=0;
+  document.getElementById('q-count').textContent='0 intel';
+  setHeard('Speech appears here…',true);
+  document.getElementById('feed').innerHTML=`<div class="empty"><div class="empty-icon">🎙</div><p>Hold mic or slide to start.<br>Streaming intel appears in under 2 sec.</p></div>`;
+}
 
-  function scrollFeed() {
-    const feed = document.getElementById('feed');
-    setTimeout(() => feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' }), 60);
-  }
-
-  function clearFeed() {
-    pendingTranscript = '';
-    feedIsEmpty = true;
-    queryCount = 0;
-    document.getElementById('q-count').textContent = '0 intel';
-    setHeard('Speech appears here as you talk…', true);
-    document.getElementById('feed').innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">🎙</div>
-        <p>Slide right to begin continuous recording.<br>Intel cards appear automatically<br>after each pause in speech.</p>
-      </div>`;
-  }
-
-  /* ── Helpers ───────────────────────────────────── */
-  function setHeard(text, isEmpty) {
-    const el = document.getElementById('heard-text');
-    el.textContent = text || (isEmpty ? 'Speech appears here as you talk…' : '');
-    el.className = isEmpty ? 'empty' : '';
-  }
-  function setStatus(msg) {
-    document.getElementById('status-text').textContent = msg;
-  }
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3200);
-  }
-  function esc(s) {
-    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+function setHeard(t,empty){
+  const el=document.getElementById('heard-text');
+  el.textContent=t||(empty?'Speech appears here…':'');el.className=empty?'empty':'';
+}
+function setStatus(msg){document.getElementById('status-text').textContent=msg}
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 </script>
 </body>
 </html>
