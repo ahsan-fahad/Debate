@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DebateIntel v2 — Fahad Ahsan</title>
+<title>DebateIntel v3 — Fahad Ahsan</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
@@ -21,6 +21,8 @@
     --amber:      #f4a623;
     --blue:       #5b9cf6;
     --shadow:     0 8px 32px rgba(0,0,0,0.55);
+    --track-bg:   #1c2028;
+    --thumb-bg:   #e8455a;
   }
   :root[data-theme="light"] {
     --bg:         #eef1f6;
@@ -36,6 +38,8 @@
     --amber:      #c47d0a;
     --blue:       #2563eb;
     --shadow:     0 4px 20px rgba(0,0,0,0.1);
+    --track-bg:   #e2e7f0;
+    --thumb-bg:   #c8293e;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,9 +53,10 @@
     margin: 0 auto;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
   }
 
-  /* ── SETUP SCREEN ───────────────────────────── */
+  /* ── SETUP SCREEN ── */
   #setup-screen {
     flex: 1;
     display: flex;
@@ -59,48 +64,31 @@
     align-items: center;
     justify-content: center;
     padding: 32px 24px;
-    gap: 28px;
+    gap: 24px;
     text-align: center;
   }
   .setup-logo {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 600;
     letter-spacing: 0.06em;
   }
   .setup-logo em { color: var(--accent); font-style: normal; }
-  .setup-sub {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-    max-width: 280px;
-  }
+  .setup-sub { font-size: 13px; color: var(--muted); line-height: 1.65; max-width: 280px; }
   .setup-card {
     width: 100%;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    display: flex; flex-direction: column; gap: 14px;
     box-shadow: var(--shadow);
   }
   .setup-card label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
   }
-  .key-input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
+  .key-wrap { position: relative; display: flex; align-items: center; }
   #api-key-input {
     width: 100%;
     background: var(--surface2);
@@ -108,409 +96,349 @@
     border-radius: 10px;
     padding: 12px 44px 12px 14px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
+    font-size: 13px; color: var(--text);
+    outline: none; transition: border-color 0.2s;
     -webkit-appearance: none;
   }
   #api-key-input:focus { border-color: var(--accent); }
   #api-key-input::placeholder { color: var(--muted); }
   .eye-btn {
-    position: absolute;
-    right: 12px;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 4px;
+    position: absolute; right: 12px;
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 16px; padding: 4px;
     -webkit-tap-highlight-color: transparent;
   }
-  .setup-hint {
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
+  .setup-hint { font-size: 11px; color: var(--muted); line-height: 1.5; }
   .setup-hint a { color: var(--blue); text-decoration: none; }
   .start-btn {
-    width: 100%;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 14px;
+    width: 100%; background: var(--accent); color: #fff;
+    border: none; border-radius: 10px; padding: 14px;
     font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
+    font-size: 15px; font-weight: 600; cursor: pointer;
     transition: opacity 0.2s, transform 0.1s;
     -webkit-tap-highlight-color: transparent;
   }
   .start-btn:active { opacity: 0.85; transform: scale(0.98); }
-  .setup-note {
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.6;
+  .theme-toggle {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 12px; font-size: 12px;
+    color: var(--muted); cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* ── MAIN APP ───────────────────────────────── */
-  #app-screen { display: none; flex-direction: column; flex: 1; }
+  /* ── APP SCREEN ── */
+  #app-screen { display: none; flex-direction: column; flex: 1; min-height: 100vh; }
   #app-screen.visible { display: flex; }
 
-  /* Header */
   header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 16px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
   }
   .hdr-left { display: flex; align-items: center; gap: 8px; }
   .live-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: background 0.3s;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border); transition: background 0.3s;
+    flex-shrink: 0;
   }
   .live-dot.on {
     background: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-dim);
     animation: blink 1s ease-in-out infinite;
   }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .wordmark {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
+    font-size: 14px; font-weight: 600; letter-spacing: 0.05em;
   }
   .wordmark span { color: var(--accent); }
   .hdr-right { display: flex; align-items: center; gap: 8px; }
   .q-count {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
+    font-size: 10px; color: var(--muted);
   }
-  .theme-toggle {
+
+  /* ── MIC ZONE ── */
+  .mic-zone {
+    padding: 20px 16px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Slide toggle mic */
+  .slide-track {
+    position: relative;
+    width: 220px; height: 60px;
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 10px;
-    font-size: 12px;
-    color: var(--muted);
+    border-radius: 30px;
+    display: flex; align-items: center;
+    padding: 0 6px;
     cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+  }
+  .slide-track.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .slide-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0%;
+    background: var(--accent-dim);
+    border-radius: 30px;
+    transition: width 0.3s ease;
+    pointer-events: none;
+  }
+  .slide-thumb {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    cursor: grab;
+  }
+  .slide-thumb.dragging { cursor: grabbing; }
+  .slide-thumb svg { width: 22px; height: 22px; }
+  .slide-hint {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    padding-left: 4px;
+    transition: color 0.2s;
+    position: relative; z-index: 2;
+  }
+  .slide-track.active .slide-hint { color: var(--accent); }
+
+  /* Language selector */
+  .lang-row {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .lang-label { font-size: 11px; color: var(--muted); }
+  .lang-btn {
+    font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface2); color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
     font-family: 'IBM Plex Sans', sans-serif;
     -webkit-tap-highlight-color: transparent;
-    transition: border-color 0.2s;
   }
-  .theme-toggle:active { border-color: var(--accent); }
-
-  /* Mic zone */
-  .mic-zone {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 22px 16px 16px;
-    gap: 14px;
-  }
-  .mic-wrap {
-    position: relative;
-    width: 110px; height: 110px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .mic-ripple {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    transition: border-color 0.25s, box-shadow 0.25s;
-  }
-  .mic-wrap.active .mic-ripple {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 10px var(--accent-dim), 0 0 0 20px rgba(232,69,90,0.06);
-    animation: ripple 1.3s ease-out infinite;
-  }
-  @keyframes ripple {
-    0%   { box-shadow: 0 0 0 0 var(--accent-dim), 0 0 0 0 rgba(232,69,90,0.04); }
-    100% { box-shadow: 0 0 0 14px transparent, 0 0 0 28px transparent; }
-  }
-  #mic-btn {
-    width: 82px; height: 82px;
-    border-radius: 50%;
-    background: var(--surface2);
-    border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s, transform 0.1s;
-    position: relative; z-index: 1;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: none;
-    user-select: none;
-  }
-  #mic-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    transform: scale(0.95);
-  }
-  .mic-svg { width: 32px; height: 32px; transition: opacity 0.2s; }
-
-  .mic-caption { text-align: center; }
-  .mic-caption strong {
-    display: block;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 3px;
-  }
-  .mic-caption small {
-    font-size: 12px;
-    color: var(--muted);
+  .lang-btn.active {
+    background: var(--accent); border-color: var(--accent); color: #fff;
   }
 
-  /* Transcript strip */
+  /* Status bar */
+  .status-bar {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--muted); flex-shrink: 0;
+  }
+  .status-dot.on { background: var(--green); animation: blink 1s infinite; }
+  #status-text { font-size: 12px; color: var(--muted); }
+
+  /* ── TRANSCRIPT STRIP ── */
   .heard-strip {
-    margin: 0 16px;
+    margin: 10px 16px 0;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 10px 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    min-height: 48px;
+    display: flex; align-items: flex-start; gap: 10px;
+    min-height: 50px;
+    max-height: 80px;
+    overflow: hidden;
   }
   .heard-tag {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 8px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    padding-right: 10px;
-    border-right: 1px solid var(--border);
-    padding-top: 2px;
-    white-space: nowrap;
+    font-size: 8px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    padding-right: 10px; border-right: 1px solid var(--border);
+    padding-top: 2px; white-space: nowrap; flex-shrink: 0;
   }
   #heard-text {
-    font-size: 13px;
-    color: var(--text);
-    line-height: 1.5;
-    flex: 1;
-    font-style: italic;
+    font-size: 13px; color: var(--text);
+    line-height: 1.5; flex: 1; font-style: italic;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
   }
   #heard-text.empty { color: var(--muted); font-style: normal; }
 
-  /* Quick pills */
+  /* ── QUICK PILLS ── */
   .pills-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 12px 16px 4px;
+    display: flex; flex-wrap: nowrap; overflow-x: auto;
+    gap: 6px; padding: 10px 16px 4px;
+    scrollbar-width: none;
   }
+  .pills-row::-webkit-scrollbar { display: none; }
   .pill {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 5px 11px;
-    border-radius: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s;
+    font-size: 11px; font-weight: 500;
+    padding: 5px 11px; border-radius: 20px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer; transition: all 0.15s;
+    white-space: nowrap; flex-shrink: 0;
     -webkit-tap-highlight-color: transparent;
   }
   .pill:active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-  /* Feed */
-  .feed {
-    flex: 1;
-    padding: 12px 16px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .feed-eyebrow {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  /* ── FEED ── */
+  .feed-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px 6px;
   }
   .feed-label {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
+    font-size: 9px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
   }
   .clear-btn {
-    font-size: 11px;
-    color: var(--muted);
-    background: none;
-    border: none;
-    cursor: pointer;
+    font-size: 11px; color: var(--muted);
+    background: none; border: none; cursor: pointer;
     font-family: 'IBM Plex Sans', sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
   .clear-btn:active { color: var(--accent); }
 
-  /* Empty state */
-  .empty {
+  #feed {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 24px;
-    text-align: center;
-    gap: 10px;
-    color: var(--muted);
+    padding: 0 16px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    overflow-y: auto;
   }
-  .empty-icon { font-size: 40px; opacity: 0.4; }
+
+  .empty {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 40px 24px; text-align: center; gap: 10px; color: var(--muted);
+  }
+  .empty-icon { font-size: 40px; opacity: 0.35; }
   .empty p { font-size: 13px; line-height: 1.65; }
 
   /* Loading */
   .loading-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px;
+    flex-shrink: 0;
   }
   .dots { display: flex; gap: 5px; }
   .dots i {
-    display: block;
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: db 1s ease-in-out infinite;
-    font-style: normal;
+    display: block; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--accent);
+    animation: db 1s ease-in-out infinite; font-style: normal;
   }
   .dots i:nth-child(2) { animation-delay: 0.16s; }
   .dots i:nth-child(3) { animation-delay: 0.32s; }
   @keyframes db { 0%,80%,100%{transform:scale(0.5);opacity:0.3} 40%{transform:scale(1);opacity:1} }
-  .loading-txt { font-size: 13px; color: var(--muted); }
+  .loading-txt { font-size: 12px; color: var(--muted); }
 
   /* Intel card */
   .intel-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
+    border-radius: 14px; overflow: hidden;
+    box-shadow: var(--shadow); flex-shrink: 0;
     animation: rise 0.35s cubic-bezier(0.22,1,0.36,1);
   }
-  @keyframes rise { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-
+  @keyframes rise { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
   .card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 13px;
+    background: var(--surface2); border-bottom: 1px solid var(--border);
   }
   .card-topic {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--blue);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.07em; text-transform: uppercase; color: var(--blue);
   }
   .card-time {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
+    font-size: 9px; color: var(--muted);
   }
-
-  .card-rows { padding: 13px 14px; display: flex; flex-direction: column; gap: 11px; }
-
-  .row { display: flex; gap: 10px; align-items: flex-start; }
+  .card-rows { padding: 12px 13px; display: flex; flex-direction: column; gap: 10px; }
+  .row { display: flex; gap: 8px; align-items: flex-start; }
   .tag {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 8px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    padding: 3px 7px;
-    border-radius: 4px;
-    white-space: nowrap;
-    margin-top: 2px;
-    flex-shrink: 0;
+    font-size: 7px; font-weight: 600; letter-spacing: 0.1em;
+    padding: 3px 6px; border-radius: 4px;
+    white-space: nowrap; margin-top: 2px; flex-shrink: 0;
   }
-  .tag-fact   { background: var(--green-dim); color: var(--green); border: 1px solid rgba(31,217,160,0.2); }
-  .tag-cnt    { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(232,69,90,0.2); }
-  .tag-ctx    { background: rgba(91,156,246,0.1); color: var(--blue); border: 1px solid rgba(91,156,246,0.2); }
-  .row-text   { font-size: 13.5px; line-height: 1.55; color: var(--text); flex: 1; }
-  .row-text strong { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--amber); font-weight: 600; }
+  .tag-fact { background: var(--green-dim); color: var(--green); border: 1px solid rgba(31,217,160,0.2); }
+  .tag-cnt  { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(232,69,90,0.2); }
+  .tag-ctx  { background: rgba(91,156,246,0.1); color: var(--blue); border: 1px solid rgba(91,156,246,0.2); }
+  .row-text { font-size: 13px; line-height: 1.55; color: var(--text); flex: 1; }
+  .row-text strong {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--amber); font-weight: 600;
+  }
 
   /* Error */
   .err-card {
     background: var(--accent-dim);
     border: 1px solid rgba(232,69,90,0.25);
-    border-radius: 12px;
-    padding: 14px;
-    font-size: 13px;
-    color: var(--accent);
-    line-height: 1.5;
+    border-radius: 12px; padding: 13px;
+    font-size: 13px; color: var(--accent); line-height: 1.5;
+    flex-shrink: 0;
   }
 
   /* Toast */
   #toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
+    position: fixed; bottom: 24px; left: 50%;
     transform: translateX(-50%) translateY(60px);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 10px 18px;
-    font-size: 13px;
-    color: var(--text);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 24px; padding: 10px 18px;
+    font-size: 13px; color: var(--text);
     transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), opacity 0.3s;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 200;
-    white-space: nowrap;
+    opacity: 0; pointer-events: none; z-index: 200; white-space: nowrap;
   }
   #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  @media print {
+    [data-theme="dark"] { filter: none; }
+    body { background: #fff; color: #000; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ═══ SETUP SCREEN ═══════════════════════════════ -->
+<!-- ═══ SETUP ═══════════════════════════════════════ -->
 <div id="setup-screen">
   <div>
     <div class="setup-logo">DEBATE<em>INTEL</em></div>
     <div style="height:6px"></div>
-    <div class="setup-sub">Real-time debate assistant for Fahad Ahsan.<br>Enter your Anthropic API key to begin.</div>
+    <div class="setup-sub">Real-time debate assistant for Fahad Ahsan.<br>Continuous listening · Auto intel · Hindi + English</div>
   </div>
-
   <div class="setup-card">
     <label>🔑 Anthropic API Key</label>
-    <div class="key-input-wrap">
-      <input id="api-key-input" type="password" placeholder="sk-ant-api03-…" autocomplete="off" autocorrect="off" spellcheck="false">
-      <button class="eye-btn" onclick="toggleKeyVisible()" title="Show/hide key">👁</button>
+    <div class="key-wrap">
+      <input id="api-key-input" type="password" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+      <button class="eye-btn" onclick="toggleKeyVisible()">👁</button>
     </div>
     <div class="setup-hint">
-      Get your key free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys.<br>
-      Your key is stored <strong>only in memory</strong> — never saved or sent anywhere except Anthropic's API.
+      Get free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys.<br>
+      Key stored in memory only — never saved anywhere.
     </div>
     <button class="start-btn" onclick="startApp()">Start DebateIntel →</button>
   </div>
-
-  <div class="setup-note">
-    Run this file in <strong>Chrome on Android</strong> for full mic support.<br>
-    Toggle <span style="color:var(--accent)">☀/☾</span> for light/dark mode anytime.
-  </div>
-
-  <button class="theme-toggle" onclick="toggleTheme()" style="margin-top:-10px">☀ / ☾</button>
+  <button class="theme-toggle" onclick="toggleTheme()">☀ / ☾</button>
 </div>
 
-<!-- ═══ APP SCREEN ═══════════════════════════════ -->
+<!-- ═══ APP ══════════════════════════════════════════ -->
 <div id="app-screen">
 
   <header>
@@ -519,57 +447,72 @@
       <div class="wordmark">DEBATE<span>INTEL</span></div>
     </div>
     <div class="hdr-right">
-      <span class="q-count" id="q-count">0 queries</span>
+      <span class="q-count" id="q-count">0 intel</span>
       <button class="theme-toggle" onclick="toggleTheme()">☀ / ☾</button>
     </div>
   </header>
 
   <div class="mic-zone">
-    <div class="mic-wrap" id="mic-wrap">
-      <div class="mic-ripple"></div>
-      <button id="mic-btn"
-        ontouchstart="startRec(event)"
-        ontouchend="stopRec(event)"
-        onmousedown="startRec(event)"
-        onmouseup="stopRec(event)"
-        onmouseleave="stopRec(event)">
-        <!-- Mic SVG -->
-        <svg class="mic-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect id="mic-body" x="9" y="2" width="6" height="12" rx="3" fill="#66728a"/>
-          <path id="mic-arc" d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11"
-            stroke="#66728a" stroke-width="2" stroke-linecap="round"/>
-          <line id="mic-stem" x1="12" y1="18" x2="12" y2="22" stroke="#66728a" stroke-width="2" stroke-linecap="round"/>
-          <line id="mic-base" x1="9" y1="22" x2="15" y2="22" stroke="#66728a" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Slide toggle -->
+    <div class="slide-track" id="slide-track">
+      <div class="slide-fill" id="slide-fill"></div>
+      <div class="slide-thumb" id="slide-thumb">
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="2" width="6" height="12" rx="3" fill="white"/>
+          <path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <line x1="12" y1="18" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <line x1="9" y1="22" x2="15" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
         </svg>
-      </button>
+      </div>
+      <div class="slide-hint" id="slide-hint">Slide → to record</div>
     </div>
-    <div class="mic-caption">
-      <strong id="mic-label">Hold to Speak</strong>
-      <small id="mic-sub">Release when done — intel arrives in seconds</small>
+
+    <!-- Language -->
+    <div class="lang-row">
+      <span class="lang-label">Language:</span>
+      <button class="lang-btn active" id="btn-en" onclick="setLang('en-IN')">English</button>
+      <button class="lang-btn" id="btn-hi" onclick="setLang('hi-IN')">हिंदी</button>
+      <button class="lang-btn" id="btn-bi" onclick="setLang('both')">Both</button>
     </div>
+
+    <!-- Status -->
+    <div class="status-bar">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Slide to start continuous recording</span>
+    </div>
+
   </div>
 
+  <!-- Transcript -->
   <div class="heard-strip">
-    <div class="heard-tag">Heard</div>
-    <div id="heard-text" class="empty">Your spoken words appear here…</div>
+    <div class="heard-tag">Live</div>
+    <div id="heard-text" class="empty">Speech appears here as you talk…</div>
   </div>
 
+  <!-- Quick pills -->
   <div class="pills-row">
-    <div class="pill" onclick="quickSearch('per capita income India 2024')">🇮🇳 Per Capita India</div>
-    <div class="pill" onclick="quickSearch('GDP growth rate India China comparison')">📊 GDP Compare</div>
-    <div class="pill" onclick="quickSearch('unemployment rate India youth')">📉 Unemployment</div>
-    <div class="pill" onclick="quickSearch('climate change Paris agreement progress')">🌍 Climate</div>
-    <div class="pill" onclick="quickSearch('India poverty rate HDI 2024')">🏘 Poverty & HDI</div>
-    <div class="pill" onclick="quickSearch('inflation India food prices 2024')">💹 Inflation</div>
+    <div class="pill" onclick="quickSearch('per capita income India 2024')">🇮🇳 Per Capita</div>
+    <div class="pill" onclick="quickSearch('GDP growth India China 2024')">📊 GDP</div>
+    <div class="pill" onclick="quickSearch('unemployment India youth 2024')">📉 Jobs</div>
+    <div class="pill" onclick="quickSearch('India poverty HDI ranking 2024')">🏘 Poverty</div>
+    <div class="pill" onclick="quickSearch('climate change India emissions')">🌍 Climate</div>
+    <div class="pill" onclick="quickSearch('India inflation food prices 2024')">💹 Inflation</div>
+    <div class="pill" onclick="quickSearch('India education literacy rate')">📚 Education</div>
+    <div class="pill" onclick="quickSearch('India US China relations 2024')">🤝 Geopolitics</div>
   </div>
 
-  <div class="feed" id="feed">
-    <div class="feed-eyebrow">
-      <span class="feed-label">Intel Feed</span>
-    </div>
+  <!-- Feed header -->
+  <div class="feed-header">
+    <span class="feed-label">Intel Feed</span>
+    <button class="clear-btn" onclick="clearFeed()">Clear all</button>
+  </div>
+
+  <!-- Feed -->
+  <div id="feed">
     <div class="empty">
       <div class="empty-icon">🎙</div>
-      <p>Hold the mic and speak your debate topic.<br>Release — intel appears instantly.</p>
+      <p>Slide right to begin continuous recording.<br>Intel cards appear automatically<br>after each pause in speech.</p>
     </div>
   </div>
 
@@ -578,141 +521,247 @@
 <div id="toast"></div>
 
 <script>
+  /* ── State ─────────────────────────────────────── */
   let API_KEY = '';
-  let recognition = null;
   let isRecording = false;
-  let lastTranscript = '';
+  let recognition = null;
+  let currentLang = 'en-IN';
   let queryCount = 0;
-  let cards = [];
+  let pendingTranscript = '';
+  let silenceTimer = null;
+  let isFetching = false;
+  let feedIsEmpty = true;
+  const SILENCE_DELAY = 1800; // ms of silence before auto-fetch
 
-  // ── Theme ──────────────────────────────────────────
+  /* ── Theme ─────────────────────────────────────── */
   function toggleTheme() {
-    const h = document.documentElement;
-    h.dataset.theme = h.dataset.theme === 'dark' ? 'light' : 'dark';
-    updateMicSvg();
-  }
-  function updateMicSvg() {
-    const active = document.getElementById('mic-btn').classList.contains('active');
-    const c = active ? '#ffffff' : 'var(--muted)';
-    ['mic-body'].forEach(id => { const el = document.getElementById(id); if(el) el.setAttribute('fill', c); });
-    ['mic-arc','mic-stem','mic-base'].forEach(id => { const el = document.getElementById(id); if(el) el.setAttribute('stroke', c); });
+    document.documentElement.dataset.theme =
+      document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
   }
 
-  // ── Setup ──────────────────────────────────────────
+  /* ── Setup ─────────────────────────────────────── */
   function toggleKeyVisible() {
     const inp = document.getElementById('api-key-input');
     inp.type = inp.type === 'password' ? 'text' : 'password';
   }
-
   function startApp() {
     const key = document.getElementById('api-key-input').value.trim();
-    if (!key.startsWith('sk-ant-')) {
-      showToast('⚠ Key should start with sk-ant-…');
-      return;
-    }
+    if (!key.startsWith('sk-ant-')) { showToast('⚠ Key should start with sk-ant-…'); return; }
     API_KEY = key;
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('app-screen').classList.add('visible');
-    showToast('✓ DebateIntel ready — hold mic to speak');
+    initSlide();
+    showToast('✓ Ready — slide to start recording');
+  }
+  document.getElementById('api-key-input').addEventListener('keydown', e => { if (e.key === 'Enter') startApp(); });
+
+  /* ── Language ──────────────────────────────────── */
+  function setLang(lang) {
+    currentLang = lang;
+    ['en','hi','bi'].forEach(l => document.getElementById('btn-'+l).classList.remove('active'));
+    if (lang === 'en-IN') document.getElementById('btn-en').classList.add('active');
+    else if (lang === 'hi-IN') document.getElementById('btn-hi').classList.add('active');
+    else document.getElementById('btn-bi').classList.add('active');
+    if (isRecording) { stopRecognition(); startRecognition(); }
   }
 
-  // Allow Enter key on input
-  document.getElementById('api-key-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') startApp();
-  });
+  /* ── Slide control ─────────────────────────────── */
+  function initSlide() {
+    const track = document.getElementById('slide-track');
+    const thumb = document.getElementById('slide-thumb');
+    let dragging = false;
+    let startX = 0;
+    let thumbX = 0;
+    const TRACK_PAD = 6;
 
-  // ── Recording ──────────────────────────────────────
-  function startRec(e) {
-    if (e) e.preventDefault();
+    function getTrackWidth() { return track.offsetWidth - thumb.offsetWidth - TRACK_PAD * 2; }
+    function getThreshold()  { return getTrackWidth() * 0.55; }
+
+    function onStart(clientX) {
+      dragging = true;
+      startX = clientX;
+      thumbX = isRecording ? getTrackWidth() : 0;
+      thumb.classList.add('dragging');
+    }
+    function onMove(clientX) {
+      if (!dragging) return;
+      const dx = clientX - startX;
+      let nx = Math.max(0, Math.min(thumbX + dx, getTrackWidth()));
+      thumb.style.transform = `translateX(${nx}px)`;
+      document.getElementById('slide-fill').style.width = ((nx / getTrackWidth()) * 100) + '%';
+    }
+    function onEnd(clientX) {
+      if (!dragging) return;
+      dragging = false;
+      thumb.classList.remove('dragging');
+      const dx = clientX - startX;
+      const nx = thumbX + dx;
+      const thr = getThreshold();
+      if (!isRecording && nx > thr) {
+        snapTo(getTrackWidth());
+        beginRecording();
+      } else if (isRecording && nx < getTrackWidth() - thr) {
+        snapTo(0);
+        endRecording();
+      } else {
+        snapTo(isRecording ? getTrackWidth() : 0);
+      }
+    }
+
+    function snapTo(x) {
+      thumb.style.transition = 'transform 0.25s ease';
+      thumb.style.transform = `translateX(${x}px)`;
+      document.getElementById('slide-fill').style.width = ((x / getTrackWidth()) * 100) + '%';
+      setTimeout(() => thumb.style.transition = '', 260);
+    }
+
+    // Touch
+    thumb.addEventListener('touchstart', e => { e.preventDefault(); onStart(e.touches[0].clientX); }, { passive: false });
+    window.addEventListener('touchmove',  e => { if (dragging) { e.preventDefault(); onMove(e.touches[0].clientX); } }, { passive: false });
+    window.addEventListener('touchend',   e => { if (dragging) onEnd(e.changedTouches[0].clientX); });
+    // Mouse
+    thumb.addEventListener('mousedown', e => onStart(e.clientX));
+    window.addEventListener('mousemove', e => { if (dragging) onMove(e.clientX); });
+    window.addEventListener('mouseup',   e => { if (dragging) onEnd(e.clientX); });
+
+    // Tap on track to toggle
+    track.addEventListener('click', e => {
+      if (e.target === thumb || thumb.contains(e.target)) return;
+      if (!isRecording) { snapTo(getTrackWidth()); beginRecording(); }
+      else              { snapTo(0);               endRecording(); }
+    });
+  }
+
+  /* ── Recording ─────────────────────────────────── */
+  function beginRecording() {
     if (isRecording) return;
     isRecording = true;
-
-    document.getElementById('mic-btn').classList.add('active');
-    document.getElementById('mic-wrap').classList.add('active');
     document.getElementById('live-dot').classList.add('on');
-    document.getElementById('mic-label').textContent = 'Listening…';
-    document.getElementById('mic-sub').textContent = 'Release when done speaking';
-    setHeard('…', false);
-    updateMicSvg();
+    document.getElementById('status-dot').classList.add('on');
+    document.getElementById('slide-track').classList.add('active');
+    document.getElementById('slide-hint').textContent = 'Recording… slide ← to stop';
+    setStatus('Listening — speak freely…');
+    setHeard('', false);
+    startRecognition();
+    // Suppress any audio feedback — unlock AudioContext silently
+    try {
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      const buf = ac.createBuffer(1, 1, 22050);
+      const src = ac.createBufferSource();
+      src.buffer = buf; src.connect(ac.destination); src.start(0);
+      setTimeout(() => ac.close(), 500);
+    } catch(e) {}
+  }
 
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-      showToast('⚠ Speech API not available — use Chrome on Android');
-      stopRecCleanup();
-      return;
+  function endRecording() {
+    if (!isRecording) return;
+    isRecording = false;
+    clearTimeout(silenceTimer);
+    document.getElementById('live-dot').classList.remove('on');
+    document.getElementById('status-dot').classList.remove('on');
+    document.getElementById('slide-track').classList.remove('active');
+    document.getElementById('slide-hint').textContent = 'Slide → to record';
+    setStatus('Session ended — slide to restart');
+    stopRecognition();
+    // Flush any remaining transcript
+    if (pendingTranscript.trim().length > 4 && !isFetching) {
+      fetchIntel(pendingTranscript.trim());
+      pendingTranscript = '';
     }
+  }
+
+  function startRecognition() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { showToast('⚠ Speech API not available — use Chrome on Android'); return; }
 
     recognition = new SR();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = 'en-IN';
+    recognition.lang = currentLang === 'both' ? 'en-IN' : currentLang;
+    // For "both" mode cycle: recognition restarted with hi-IN after first result batch
+    let langCycle = currentLang === 'both';
+    let useHindi = false;
 
     recognition.onresult = (event) => {
-      let final = '', interim = '';
+      clearTimeout(silenceTimer);
+      let interim = '', final = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) final += event.results[i][0].transcript;
+        if (event.results[i].isFinal) final += event.results[i][0].transcript + ' ';
         else interim += event.results[i][0].transcript;
       }
-      lastTranscript = (final || interim).trim();
-      setHeard(lastTranscript || '…', false);
+      const spoken = (final || interim).trim();
+      if (spoken) {
+        pendingTranscript += (final || '');
+        setHeard(spoken, false);
+        setStatus('Hearing… pausing will fetch intel');
+      }
+      // Silence detection: after user stops talking, trigger intel
+      if (final) {
+        silenceTimer = setTimeout(() => {
+          if (pendingTranscript.trim().length > 4 && !isFetching) {
+            const chunk = pendingTranscript.trim();
+            pendingTranscript = '';
+            fetchIntel(chunk);
+          }
+        }, SILENCE_DELAY);
+      }
     };
 
     recognition.onerror = (e) => {
-      if (e.error === 'not-allowed') showToast('⚠ Mic permission denied — check Chrome settings');
-      else if (e.error !== 'no-speech') showToast('⚠ Speech error: ' + e.error);
-      stopRecCleanup();
+      if (e.error === 'not-allowed') {
+        showToast('⚠ Mic permission denied — allow in Chrome settings');
+        endRecording();
+      } else if (e.error === 'no-speech') {
+        // Normal — just restart if still recording
+        if (isRecording) restartRecognition();
+      } else {
+        setStatus('Error: ' + e.error + ' — restarting…');
+        if (isRecording) setTimeout(restartRecognition, 1000);
+      }
+    };
+
+    recognition.onend = () => {
+      // Auto-restart to keep continuous session alive
+      if (isRecording) restartRecognition();
     };
 
     recognition.start();
   }
 
-  function stopRec(e) {
-    if (e) e.preventDefault();
+  function restartRecognition() {
     if (!isRecording) return;
-    stopRecCleanup();
-    if (recognition) {
-      recognition.onend = () => {
-        if (lastTranscript && lastTranscript.length > 2) {
-          fetchIntel(lastTranscript);
-        } else {
-          setHeard('Nothing detected — try again.', true);
-        }
-      };
-      recognition.stop();
-    }
+    try { recognition.stop(); } catch(e) {}
+    setTimeout(() => { if (isRecording) startRecognition(); }, 300);
   }
 
-  function stopRecCleanup() {
-    isRecording = false;
-    document.getElementById('mic-btn').classList.remove('active');
-    document.getElementById('mic-wrap').classList.remove('active');
-    document.getElementById('live-dot').classList.remove('on');
-    document.getElementById('mic-label').textContent = 'Hold to Speak';
-    document.getElementById('mic-sub').textContent = 'Release when done — intel arrives in seconds';
-    updateMicSvg();
+  function stopRecognition() {
+    try { if (recognition) { recognition.onend = null; recognition.stop(); } } catch(e) {}
+    recognition = null;
   }
 
-  // ── Quick pill ─────────────────────────────────────
+  /* ── Quick pill ────────────────────────────────── */
   function quickSearch(topic) {
-    lastTranscript = topic;
     setHeard(topic, false);
     fetchIntel(topic);
   }
 
-  // ── Claude API ─────────────────────────────────────
+  /* ── Claude API ────────────────────────────────── */
   async function fetchIntel(transcript) {
-    renderLoading(transcript);
+    if (!transcript || transcript.length < 3) return;
+    isFetching = true;
+    setStatus('Fetching intel…');
+    addLoadingCard(transcript);
 
-    const prompt = `You are a real-time debate assistant. Analyze the spoken input and provide concise, accurate intel.
+    const prompt = `You are a real-time debate assistant. The debater just said the following during their debate session. Identify the core debatable topic and give concise, accurate intel.
 
-Spoken input: "${transcript}"
+Spoken: "${transcript}"
 
-Respond ONLY in this exact JSON (no markdown fences, no preamble):
+Respond ONLY in this exact JSON (no markdown, no preamble):
 {
   "topic": "Core topic in 3-5 words",
-  "fact": "One strong supporting fact or statistic. Wrap key numbers in [[ ]]. Max 2 lines.",
-  "counter": "The most likely counterargument an opponent would raise. Max 2 lines.",
-  "context": "One critical recent development or context line."
+  "fact": "One strong supporting fact or statistic with key numbers wrapped in [[ ]]. Max 2 lines.",
+  "counter": "The strongest counterargument an opponent would raise. Max 2 lines.",
+  "context": "One critical recent development, context, or caveat."
 }`;
 
     try {
@@ -738,8 +787,6 @@ Respond ONLY in this exact JSON (no markdown fences, no preamble):
       }
 
       const data = await res.json();
-
-      // Extract text blocks (skip tool_use blocks)
       let responseText = '';
       if (data.content) {
         for (const block of data.content) {
@@ -748,102 +795,117 @@ Respond ONLY in this exact JSON (no markdown fences, no preamble):
       }
 
       const jsonMatch = responseText.match(/\{[\s\S]*?\}/);
-      if (!jsonMatch) throw new Error('No JSON found in response');
+      if (!jsonMatch) throw new Error('No JSON in response');
       const intel = JSON.parse(jsonMatch[0]);
 
       queryCount++;
-      document.getElementById('q-count').textContent = queryCount + (queryCount === 1 ? ' query' : ' queries');
-      renderCard(intel);
+      document.getElementById('q-count').textContent = queryCount + ' intel';
+      replaceLoadingCard(intel);
 
     } catch (err) {
-      renderError(err.message);
+      replaceLoadingWithError(err.message);
+    } finally {
+      isFetching = false;
+      if (isRecording) setStatus('Listening — speak freely…');
     }
   }
 
-  // ── Render helpers ─────────────────────────────────
-  function setHeard(text, isEmpty) {
-    const el = document.getElementById('heard-text');
-    el.textContent = text;
-    el.className = isEmpty ? 'empty' : '';
-  }
+  /* ── Feed rendering ────────────────────────────── */
+  let loadingId = null;
 
-  function renderLoading(transcript) {
+  function ensureFeedReady() {
     const feed = document.getElementById('feed');
-    feed.innerHTML = `
-      <div class="feed-eyebrow">
-        <span class="feed-label">Intel Feed</span>
-      </div>
-      <div class="loading-row">
-        <div class="dots"><i></i><i></i><i></i></div>
-        <div class="loading-txt">Fetching intel on: <em>${esc(transcript.slice(0,45))}…</em></div>
-      </div>`;
+    if (feedIsEmpty) {
+      feed.innerHTML = '';
+      feedIsEmpty = false;
+    }
   }
 
-  function renderCard(intel) {
+  function addLoadingCard(transcript) {
+    ensureFeedReady();
+    const id = 'load-' + Date.now();
+    loadingId = id;
+    const div = document.createElement('div');
+    div.id = id;
+    div.className = 'loading-row';
+    div.innerHTML = `
+      <div class="dots"><i></i><i></i><i></i></div>
+      <div class="loading-txt">Analyzing: <em>${esc(transcript.slice(0,50))}…</em></div>`;
+    document.getElementById('feed').appendChild(div);
+    scrollFeed();
+  }
+
+  function replaceLoadingCard(intel) {
+    const old = document.getElementById(loadingId);
     const now = new Date();
     const t = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
     const factHtml  = esc(intel.fact    || '—').replace(/\[\[(.+?)\]\]/g, '<strong>$1</strong>');
     const countHtml = esc(intel.counter || '—');
     const ctxHtml   = esc(intel.context || '—');
 
-    const feed = document.getElementById('feed');
-    feed.innerHTML = `
-      <div class="feed-eyebrow">
-        <span class="feed-label">Intel Feed</span>
-        <button class="clear-btn" onclick="clearFeed()">Clear</button>
+    const card = document.createElement('div');
+    card.className = 'intel-card';
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="card-topic">${esc(intel.topic || 'Debate Topic')}</div>
+        <div class="card-time">${t}</div>
       </div>
-      <div class="intel-card">
-        <div class="card-head">
-          <div class="card-topic">${esc(intel.topic || 'Debate Topic')}</div>
-          <div class="card-time">${t}</div>
-        </div>
-        <div class="card-rows">
-          <div class="row">
-            <span class="tag tag-fact">FACT</span>
-            <div class="row-text">${factHtml}</div>
-          </div>
-          <div class="row">
-            <span class="tag tag-cnt">COUNTER</span>
-            <div class="row-text">${countHtml}</div>
-          </div>
-          <div class="row">
-            <span class="tag tag-ctx">CONTEXT</span>
-            <div class="row-text">${ctxHtml}</div>
-          </div>
-        </div>
+      <div class="card-rows">
+        <div class="row"><span class="tag tag-fact">FACT</span><div class="row-text">${factHtml}</div></div>
+        <div class="row"><span class="tag tag-cnt">COUNTER</span><div class="row-text">${countHtml}</div></div>
+        <div class="row"><span class="tag tag-ctx">CONTEXT</span><div class="row-text">${ctxHtml}</div></div>
       </div>`;
+
+    if (old) old.replaceWith(card);
+    else document.getElementById('feed').appendChild(card);
+    scrollFeed();
   }
 
-  function renderError(msg) {
+  function replaceLoadingWithError(msg) {
+    const old = document.getElementById(loadingId);
+    const div = document.createElement('div');
+    div.className = 'err-card';
+    div.innerHTML = `⚠ ${esc(msg)}<br><small style="opacity:0.7;font-size:11px">Check API key or connection.</small>`;
+    if (old) old.replaceWith(div);
+    else document.getElementById('feed').appendChild(div);
+    scrollFeed();
+  }
+
+  function scrollFeed() {
     const feed = document.getElementById('feed');
-    feed.innerHTML = `
-      <div class="feed-eyebrow"><span class="feed-label">Intel Feed</span></div>
-      <div class="err-card">⚠ ${esc(msg)}<br><small style="opacity:0.7;font-size:11px">Check your API key or internet connection.</small></div>`;
+    setTimeout(() => feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' }), 60);
   }
 
   function clearFeed() {
-    lastTranscript = '';
-    setHeard('Your spoken words appear here…', true);
-    const feed = document.getElementById('feed');
-    feed.innerHTML = `
-      <div class="feed-eyebrow"><span class="feed-label">Intel Feed</span></div>
+    pendingTranscript = '';
+    feedIsEmpty = true;
+    queryCount = 0;
+    document.getElementById('q-count').textContent = '0 intel';
+    setHeard('Speech appears here as you talk…', true);
+    document.getElementById('feed').innerHTML = `
       <div class="empty">
         <div class="empty-icon">🎙</div>
-        <p>Hold the mic and speak your debate topic.<br>Release — intel appears instantly.</p>
+        <p>Slide right to begin continuous recording.<br>Intel cards appear automatically<br>after each pause in speech.</p>
       </div>`;
   }
 
-  function esc(s) {
-    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  /* ── Helpers ───────────────────────────────────── */
+  function setHeard(text, isEmpty) {
+    const el = document.getElementById('heard-text');
+    el.textContent = text || (isEmpty ? 'Speech appears here as you talk…' : '');
+    el.className = isEmpty ? 'empty' : '';
   }
-
-  // ── Toast ──────────────────────────────────────────
+  function setStatus(msg) {
+    document.getElementById('status-text').textContent = msg;
+  }
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+  function esc(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 </script>
 </body>
